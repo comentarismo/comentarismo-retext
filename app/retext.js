@@ -81,16 +81,6 @@ module.exports = function (app, connection) {
                 .process(track.text, processResponse)
         }
 
-
-        // ================= // =================
-        // ================= equality -
-        // ================= // =================
-        else if (type === "equality") {
-            return r.use(equality)
-                .process(track.text, processResponse)
-        }
-
-
         // ================= // =================
         // ================= overuse - Check words for overuse;
         // ================= // =================
@@ -147,7 +137,7 @@ module.exports = function (app, connection) {
         }
 
         // ================= // =================
-        // ================= emoji - Encode or decode Gemojis;
+        // ================= emoji - Encode or decode emojis;
         // ================= // =================
         else if (type === "emoji") {
             return r.use(emoji)
@@ -247,11 +237,19 @@ module.exports = function (app, connection) {
         }
 
         // ================= // =================
-        // ================= spell - Spelling checker;
+        // ================= spell - Spelling checker for EN US;
         // ================= // =================
-        else if (type === "spell") {
+        else if (type === "spell-en-us") {
             return r.use(spell, enUS)
-                .process('color', processResponse)
+                .process(track.text, processResponse)
+        }
+
+        // ================= // =================
+        // ================= spell - Spelling checker for EN GB;
+        // ================= // =================
+        else if (type === "spell-en-gb") {
+            return r.use(spell, enGB)
+                .process(track.text, processResponse)
         }
 
         // ================= // =================

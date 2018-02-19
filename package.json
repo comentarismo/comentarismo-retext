@@ -1,13 +1,13 @@
 {
   "name": "comentarismo-retext",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
     "check-coverage": "node_modules/.bin/istanbul check-coverage ./coverage/coverage.json",
     "coverage": "node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha -- ./test/ --recursive",
-    "test": "node_modules/.bin/mocha ./test/ --recursive",
+    "test": "node_modules/.bin/mocha ./test/ --timeout 60000 --recursive ",
     "test-prod": "HOST=analytics.comentarismo.com npm run test",
     "npm-update": "node_modules/.bin/npm-update-outdated",
     "wrap": "npm shrinkwrap"
@@ -64,6 +64,7 @@
     "assert": "1.4.1",
     "chai": "3.5.0",
     "istanbul": "https://registry.npmjs.org/istanbul/-/istanbul-0.4.5.tgz",
-    "mocha": "3.1.2"
+    "mocha": "3.1.2",
+    "supertest": "^3.0.0"
   }
 }

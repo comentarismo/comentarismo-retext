@@ -77,48 +77,6 @@ module.exports = function (app) {
             return processResponse(knwlInstance.get('places'));
         }
 
-        // ================= // =================
-        // ================= twitter extractMentions
-        // ================= // =================
-        else if (type === "twitter-extractMentions") {
-            return processResponse(twitter.extractMentions(twitter.htmlEscape(track.text)));
-        }
-
-        // ================= // =================
-        // ================= twitter extractHashtags
-        // ================= // =================
-        else if (type === "twitter-extractHashtags") {
-            return processResponse(twitter.extractMentions(twitter.htmlEscape(track.text)));
-
-        }
-
-        // ================= // =================
-        // ================= twitter extractReplies
-        // ================= // =================
-        else if (type === "twitter-extractReplies") {
-            return processResponse(twitter.extractReplies(twitter.htmlEscape(track.text)));
-
-        }
-
-
-        // ================= // =================
-        // ================= twitter extractUrls
-        // ================= // =================
-        else if (type === "twitter-extractUrls") {
-            return processResponse(twitter.extractUrls(twitter.htmlEscape(track.text)));
-
-        }
-
-
-        // ================= // =================
-        // ================= twitter extractCashtags
-        // ================= // =================
-        else if (type === "twitter-extractCashtags") {
-            return processResponse(twitter.extractCashtags(twitter.htmlEscape(track.text)));
-
-        }
-
-
         else {
             console.log("/textinfo, Could not identify message type :(", track.type);
             return res.status(422).send({error: "invalid_type"});

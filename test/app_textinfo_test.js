@@ -1,18 +1,27 @@
 var chai = require('chai');
 var assert = chai.assert;
+var should = chai.Should()
 
-var request = require('request');
+var request = require('supertest');
 
 var Promise = require("bluebird");
 Promise.promisifyAll(request, {multiArgs: true});
 
 var utils = require("../utils");
 
-var HOST = process.env.HOST || "localhost:3013";
-var DEBUG_MODE_ON = process.env.DEBUG || true;
+const DEBUG_MODE_ON = /true/.test(process.env.DEBUG);
+
 
 describe('Should process text info post', function () {
 
+    var server;
+    beforeEach(function () {
+        server = require('../app.js');
+    });
+    afterEach(function () {
+        server.close();
+
+    });
 
     var expected = {
         dates: [
@@ -126,28 +135,19 @@ describe('Should process text info post', function () {
             this.timeout(10000);
 
             var target = {
-                url: 'http://' + HOST + '/textinfo/dates',
+                url: '/textinfo/dates',
                 method: 'POST',
                 form: {text: expected.dates[0]}
             };
 
-            request.postAsync(target).spread(function (response, body) {
+            request(server).post(target.url).send(target.form).then(function (res) {
 
-                try {
-                    var syntax = JSON.parse(body.toString('utf8'));
-                    if (!syntax || syntax.error) {
-                        done(new Error(syntax.error));
-                    } else {
-                        assert.deepEqual(syntax[0].month + "/" + syntax[0].day, "12/28");
-                        done();
-                    }
-                } catch (e) {
-                    if (DEBUG_MODE_ON) {
-                        console.log('Error while tracking: ', e);
-                        console.log("Body: ", body);
-                        utils.dumpError(e);
-                    }
-                    done(e);
+                const syntax = res.body;
+                if (!syntax || syntax.error) {
+                    done(new Error(syntax.error));
+                } else {
+                    assert.deepEqual(syntax[0].month + "/" + syntax[0].day, "12/28");
+                    done();
                 }
 
             }).catch(function (e) {
@@ -155,35 +155,25 @@ describe('Should process text info post', function () {
             });
         });
 
-
         it('should return ok for a valid hit - times', function (done) {
             this.timeout(10000);
 
             var target = {
-                url: 'http://' + HOST + '/textinfo/times',
+                url: '/textinfo/times',
                 method: 'POST',
                 form: {text: expected.times[0]}
             };
 
-            request.postAsync(target).spread(function (response, body) {
+            request(server).post(target.url).send(target.form).then(function (res) {
 
-                try {
-                    var syntax = JSON.parse(body.toString('utf8'));
-                    if (!syntax || syntax.error) {
-                        done(new Error(syntax.error));
-                    } else {
-                        assert.deepEqual(syntax[0].hour, "12");
-                        assert.deepEqual(syntax[0].minute, "54");
-                        assert.deepEqual(syntax[0].daynight, "AM");
-                        done();
-                    }
-                } catch (e) {
-                    if (DEBUG_MODE_ON) {
-                        console.log('Error while tracking: ', e);
-                        console.log("Body: ", body);
-                        utils.dumpError(e);
-                    }
-                    done(e);
+                const syntax = res.body;
+                if (!syntax || syntax.error) {
+                    done(new Error(syntax.error));
+                } else {
+                    assert.deepEqual(syntax[0].hour, "12");
+                    assert.deepEqual(syntax[0].minute, "54");
+                    assert.deepEqual(syntax[0].daynight, "AM");
+                    done();
                 }
 
             }).catch(function (e) {
@@ -195,28 +185,19 @@ describe('Should process text info post', function () {
             this.timeout(10000);
 
             var target = {
-                url: 'http://' + HOST + '/textinfo/phones',
+                url: '/textinfo/phones',
                 method: 'POST',
                 form: {text: expected.phones[2]}
             };
 
-            request.postAsync(target).spread(function (response, body) {
+            request(server).post(target.url).send(target.form).then(function (res) {
 
-                try {
-                    var syntax = JSON.parse(body.toString('utf8'));
-                    if (!syntax || syntax.error) {
-                        done(new Error(syntax.error));
-                    } else {
-                        assert.deepEqual(syntax.length, 1);
-                        done();
-                    }
-                } catch (e) {
-                    if (DEBUG_MODE_ON) {
-                        console.log('Error while tracking: ', e);
-                        console.log("Body: ", body);
-                        utils.dumpError(e);
-                    }
-                    done(e);
+                const syntax = res.body;
+                if (!syntax || syntax.error) {
+                    done(new Error(syntax.error));
+                } else {
+                    assert.deepEqual(syntax.length, 1);
+                    done();
                 }
 
             }).catch(function (e) {
@@ -228,28 +209,19 @@ describe('Should process text info post', function () {
             this.timeout(10000);
 
             var target = {
-                url: 'http://' + HOST + '/textinfo/links',
+                url: '/textinfo/links',
                 method: 'POST',
                 form: {text: expected.links[0]}
             };
 
-            request.postAsync(target).spread(function (response, body) {
+            request(server).post(target.url).send(target.form).then(function (res) {
 
-                try {
-                    var syntax = JSON.parse(body.toString('utf8'));
-                    if (!syntax || syntax.error) {
-                        done(new Error(syntax.error));
-                    } else {
-                        assert.deepEqual(syntax[0].link, "http://twitter.com/twitter");
-                        done();
-                    }
-                } catch (e) {
-                    if (DEBUG_MODE_ON) {
-                        console.log('Error while tracking: ', e);
-                        console.log("Body: ", body);
-                        utils.dumpError(e);
-                    }
-                    done(e);
+                const syntax = res.body;
+                if (!syntax || syntax.error) {
+                    done(new Error(syntax.error));
+                } else {
+                    assert.deepEqual(syntax[0].link, "http://twitter.com/twitter");
+                    done();
                 }
 
             }).catch(function (e) {
@@ -263,28 +235,19 @@ describe('Should process text info post', function () {
                 this.timeout(10000);
 
                 var target = {
-                    url: 'http://' + HOST + '/textinfo/emails',
+                    url: '/textinfo/emails',
                     method: 'POST',
                     form: {text: "You can reach me on " + ve}
                 };
 
-                request.postAsync(target).spread(function (response, body) {
+                request(server).post(target.url).send(target.form).then(function (res) {
 
-                    try {
-                        var syntax = JSON.parse(body.toString('utf8'));
-                        if (!syntax || syntax.error) {
-                            done(new Error(syntax.error));
-                        } else {
-                            assert.deepEqual(syntax[0].address, ve);
-                            done();
-                        }
-                    } catch (e) {
-                        if (DEBUG_MODE_ON) {
-                            console.log('Error while tracking: ', e);
-                            console.log("Body: ", body);
-                            utils.dumpError(e);
-                        }
-                        done(e);
+                    const syntax = res.body;
+                    if (!syntax || syntax.error) {
+                        done(new Error(syntax.error));
+                    } else {
+                        assert.deepEqual(syntax[0].address, ve);
+                        done();
                     }
 
                 }).catch(function (e) {
@@ -298,28 +261,19 @@ describe('Should process text info post', function () {
             this.timeout(10000);
 
             var target = {
-                url: 'http://' + HOST + '/textinfo/places',
+                url: '/textinfo/places',
                 method: 'POST',
                 form: {text: expected.places[0]}
             };
 
-            request.postAsync(target).spread(function (response, body) {
+            request(server).post(target.url).send(target.form).then(function (res) {
 
-                try {
-                    var syntax = JSON.parse(body.toString('utf8'));
-                    if (!syntax || syntax.error) {
-                        done(new Error(syntax.error));
-                    } else {
-                        assert.deepEqual(syntax[0].place, "Los Angeles");
-                        done();
-                    }
-                } catch (e) {
-                    if (DEBUG_MODE_ON) {
-                        console.log('Error while tracking: ', e);
-                        console.log("Body: ", body);
-                        utils.dumpError(e);
-                    }
-                    done(e);
+                const syntax = res.body;
+                if (!syntax || syntax.error) {
+                    done(new Error(syntax.error));
+                } else {
+                    assert.deepEqual(syntax[0].place, "Los Angeles");
+                    done();
                 }
 
             }).catch(function (e) {

@@ -1,10 +1,7 @@
 var utils = require("../utils");
 var twitter = require('twitter-text')
 
-module.exports = function (app, requestIp, connection) {
-
-
-    //TODO: add limiter for KEY
+module.exports = function (app) {
 
 
     //find dates, times, phones, links, emails, places,
@@ -26,31 +23,49 @@ module.exports = function (app, requestIp, connection) {
             console.log("syntax, Could not identify message, type -> ", type, track);
             return res.status(422).send({error: "invalid_message"});
         }
-        console.log('twitter called ...' + type);
+        // console.log('twitter called ...' + type);
 
         type = type.toLowerCase();
 
+
         // ================= // =================
-        // ================= extractMentions
+        // ================= extracthashtags
         // ================= // =================
-        if (type === "extractmentions") {
-            var mentions = twitter.extractMentions(twitter.htmlEscape(track.text));
-            console.log("extractMentions -> ", mentions);
-            return processResponse(mentions);
+        if (type === "extracthashtags") {
+            const result = twitter.extractHashtags(twitter.htmlEscape(track.text))
+            return processResponse({extracthashtags: result});
         }
 
         // ================= // =================
-        // ================= extractHashtags
+        // ================= extractreplies
         // ================= // =================
-        else if (type === "extracthashtags") {
-            return processResponse(twitter.extractHashtags(twitter.htmlEscape(track.text)));
+        else if (type === "extractreplies") {
+            const result = twitter.extractReplies(twitter.htmlEscape(track.text))
+            return processResponse({extractreplies: [result]});
+        }
+
+        // ================= // =================
+        // ================= extractmentions
+        // ================= // =================
+        else if (type === "extractmentions") {
+            const result = twitter.extractMentions(twitter.htmlEscape(track.text));
+            return processResponse({extractmentions: result});
         }
 
         // ================= // =================
         // ================= extractUrls
         // ================= // =================
         else if (type === "extracturls") {
-            return processResponse(twitter.extractUrls(twitter.htmlEscape(track.text)));
+            const result = twitter.extractUrls(twitter.htmlEscape(track.text))
+            return processResponse({extracturls:result});
+        }
+
+        // ================= // =================
+        // ================= extractCashtags
+        // ================= // =================
+        else if (type === "extractcashtags") {
+            const result = twitter.extractCashtags(twitter.htmlEscape(track.text))
+            return processResponse({extractcashtags:result});
         }
 
         else {

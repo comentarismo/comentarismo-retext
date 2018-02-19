@@ -20,5 +20,7 @@ require('./app/textinfo')(app);
 require('./app/twitter')(app);
 require('./app/retext')(app);
 
-app.listen(port);
+var server = app.listen(port);
 console.log('Express app started on port ' + port);
+
+module.exports = server;
